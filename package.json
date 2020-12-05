@@ -18,6 +18,7 @@
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
+    "pixi-projection": "^0.3.15",
     "pixi.js": "^5.3.3"
   }
 }

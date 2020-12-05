@@ -1,6 +1,12 @@
 import * as PIXI from "pixi.js"
+global.PIXI = PIXI;
+import "pixi-projection";
+//https://pixijs.io/examples/#/plugin-projection/cards.js
+const app = new PIXI.Application({ width: 1024, height: 768, backgroundColor: 0x315439 });
 
-const app = new PIXI.Application({ width: 1024, height: 768 });
+
+
+const texture = PIXI.Texture.from('examples/assets/bunny.png');
 
 document.body.appendChild(app.view);
 
@@ -41,6 +47,7 @@ class CardSet {
                 );
                 card.x = 50 * i;
                 card.y = 100 * j;
+
                 this.APP.stage.addChild(card);
             }
         }
