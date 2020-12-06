@@ -1,5 +1,11 @@
 console.log("text game");
 const util = require("util");
+const readline = require("readline");
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
 class Card {
   constructor(set, value, color, joker = false) {
     this.value = value;
@@ -31,11 +37,12 @@ class Game {
       ...new Cards("R").cards,
       ...new Cards("B").cards,
     ]);
-    this.Player01 = new Player();
-    this.Player02 = new Player();
     this.Pile01 = new CardGroup();
     this.Pile02 = new CardGroup();
     this.Table = new CardGroup();
+
+    this.Player01 = new Player(this);
+    this.Player02 = new Player(this);
   }
   shuffle(array) {
     var currentIndex = array.length,
@@ -129,8 +136,21 @@ class CardGroup {
   }
 }
 class Player extends CardGroup {
-  constructor() {
+  constructor(game) {
     super();
+    this.game = game;
+  }
+  takeMase() {
+    var card = game.Mase.take();
+    console.log("draw", card);
+    this.add(card);
+    console.log(this.hand);
+    rl.question("Which card?", (index) => {
+      this.game.Table.add(this.take(index));
+      console.log(this.hand);
+      rl.close();
+    });
+    // user input which card
   }
 }
 
@@ -138,5 +158,7 @@ const game = new Game();
 
 game.Mase.shuffle();
 game.deal();
+
+//game.Player01.takeMase();
 
 console.log(util.inspect(game, false, null, true /* enable colors */));
