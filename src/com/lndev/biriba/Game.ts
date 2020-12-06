@@ -10,10 +10,7 @@ export default class Game {
     public Pile02: CardGroup;
     constructor() {
         this.Table = new CardGroup();
-        this.Mase = new CardGroup([
-            ...new Cards("R").hand,
-            ...new Cards("B").hand,
-        ]);
+        this.Mase = new CardGroup();
         this.Player01 = new CardGroup();
         this.Player02 = new CardGroup();
         this.Pile01 = new CardGroup();
@@ -44,6 +41,12 @@ export default class Game {
         this.Pile01.sort();
         this.Pile02.sort();
 
+    }
+    public createCards(sheet: PIXI.LoaderResource) {
+        this.Mase.hand = ([
+            ...new Cards("R", sheet).hand,
+            ...new Cards("B", sheet).hand,
+        ]);
     }
 
 }

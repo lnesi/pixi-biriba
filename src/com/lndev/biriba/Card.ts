@@ -7,11 +7,36 @@ export default class Card {
     public sortValue: number
     public color: string
     public isJocker: boolean
-    constructor(set: string, value: number, color: string, isJocker: boolean = false) {
+    public Object: PIXI.Container;
+    public FrontFace: PIXI.Sprite;
+    public BackFace: PIXI.Sprite;
+
+    constructor(set: string, value: number, color: string, isJocker: boolean = false, sheet: PIXI.LoaderResource) {
         this.set = set;
         this.value = value;
         this.color = color
         this.isJocker = isJocker
         this.sortValue = this.value + Card.SET_VALUE[set]
+        this.Object = new PIXI.Container;
+        this.FrontFace = new PIXI.Sprite(
+            sheet.textures[
+            "card" + set + value + ".png"
+            ]
+        );
+        this.BackFace = new PIXI.Sprite(
+            sheet.textures[
+            "cardBackColor" + color + ".png"
+            ]
+        );
+        this.Object.addChild(this.FrontFace);
     }
+    public faceDown() {
+        this.Object.removeChildAt[0];
+        this.Object.addChild(this.BackFace)
+    }
+    public faceUp() {
+        this.Object.removeChildAt[0];
+        this.Object.addChild(this.FrontFace)
+    }
+
 }
