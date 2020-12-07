@@ -38,5 +38,17 @@ export default class Card {
         this.Object.removeChildAt[0];
         this.Object.addChild(this.FrontFace)
     }
+    public moveTo(x: number, y: number, delay: number) {
+        setTimeout(() => {
+            setInterval(() => {
+                if (this.Object.x < x)
+                    this.Object.x += 5;
+                if (this.Object.y < y)
+                    this.Object.y += 5;
+            }, 5)
+        }, delay)
+
+
+    }
 
 }

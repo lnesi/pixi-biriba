@@ -1,14 +1,18 @@
 import Cards from './Cards';
 import CardGroup from './CardGroup';
+import Card from './Card';
 
-export default class Game {
+export default class Game extends EventTarget {
     public Mase: CardGroup;
     public Table: CardGroup;
     public Player01: CardGroup;
     public Player02: CardGroup;
     public Pile01: CardGroup;
     public Pile02: CardGroup;
+    public currentPlayer: number = 0;
+    public tookedFromMase: boolean = false
     constructor() {
+        super();
         this.Table = new CardGroup();
         this.Mase = new CardGroup();
         this.Player01 = new CardGroup();
@@ -47,6 +51,17 @@ export default class Game {
             ...new Cards("R", sheet).hand,
             ...new Cards("B", sheet).hand,
         ]);
+    }
+    public takeFromMase() {
+        // if (!this.tookedFromMase) {
+        const card = this.Mase.hand.pop();
+        this.tookedFromMase = true
+        if (this.currentPlayer === 0) {
+            this.Table.hand.push(card);
+        }
+        this.dispatchEvent(new CustomEvent('CARD_TAKEN_MASE', { detail: card }));
+        // }
+
     }
 
 }
