@@ -56,10 +56,8 @@ export default class Game extends EventTarget {
         // if (!this.tookedFromMase) {
         const card = this.Mase.hand.pop();
         this.tookedFromMase = true
-        if (this.currentPlayer === 0) {
-            this.Table.hand.push(card);
-        }
-        this.dispatchEvent(new CustomEvent('CARD_TAKEN_MASE', { detail: card }));
+
+        this.dispatchEvent(new CustomEvent('CARD_TAKEN_MASE', { detail: { card, player: this.Player01 } }));
         // }
 
     }

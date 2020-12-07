@@ -29,6 +29,8 @@ export default class Card {
             ]
         );
         this.Object.addChild(this.FrontFace);
+        this.Object.scale.x = .5
+        this.Object.scale.y = .5
     }
     public faceDown() {
         this.Object.removeChildAt[0];
