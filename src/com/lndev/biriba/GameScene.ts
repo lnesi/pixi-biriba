@@ -22,32 +22,35 @@ class CardsContainer extends PIXI.Container {
         this.yOffset = yOffset
 
     }
-    removeAll() {
+    public removeAll() {
         for (var i = 0; i < this.children.length; i = 0) {
             this.removeChildAt(0)
         }
     }
 
-    renderAll() {
+    public renderAll() {
         for (var i = 0; i < this.cards.hand.length; i++) {
             this.cards.hand[i].moveTo(this.xInit + (this.xOffset * i), this.yInit + (this.yOffset * i), 10 * i);
             this.addChild(this.cards.hand[i].Object);
         }
     }
-   
+
 }
 
 
 class Player extends CardsContainer {
-    public cards: CardGroup
-
     public name: string
-
     constructor(name: string, cards: CardGroup, yInit: number, yOffset: number) {
         super(cards, 100, 25, yInit, yOffset);
         this.name = name;
-
-
+        this.addListener('CARD_CLICK', this.onCardClick.bind(this))
+    }
+    private onCardClick(card) {
+        card.select()
+    }
+    public renderAll() {
+        super.renderAll();
+        this.cards.unselectAll();
     }
 
 }
@@ -74,26 +77,26 @@ export default class GameScene {
 
         this.Mase.addListener('CARD_CLICK', () => {
             this.game.takeFromMase();
-            
+
         });
 
-        this.Table.addListener('CARD_CLICK',(card:Card)=>{
-            this.Player01.cards.hand=[...this.Player01.cards.hand,...this.Table.cards.hand] 
+        this.Table.addListener('CARD_CLICK', (card: Card) => {
+            this.Player01.cards.hand = [...this.Player01.cards.hand, ...this.Table.cards.hand]
             this.Player01.cards.sort();
-            this.Table.cards.hand=[];
+            this.Table.cards.hand = [];
             this.removeAll();
             this.renderAll();
         });
 
-        this.Player01.addListener('CARD_CLICK', (card:Card) => {
-           //console.log(card)
-           this.Table.cards.hand.push(card);
-           this.Player01.cards.discard(card);
-           this.removeAll();
-           this.renderAll();
+        // this.Player01.addListener('CARD_CLICK', (card:Card) => {
+        //    //console.log(card)
+        //    this.Table.cards.hand.push(card);
+        //    this.Player01.cards.discard(card);
+        //    this.removeAll();
+        //    this.renderAll();
 
-        });
-        
+        // });
+
         this.game.addEventListener('CARD_TAKEN_MASE', (e: any) => {
             e.detail.player.hand.push(e.detail.card);
             e.detail.player.sort();
@@ -114,7 +117,7 @@ export default class GameScene {
     }
     private renderAll() {
         this.Mase.cards.faceDownAll();
-        this.Mase.cards.hand[this.Mase.cards.hand.length-1].faceUp();
+        this.Mase.cards.hand[this.Mase.cards.hand.length - 1].faceUp();
         this.Mase.renderAll();
         this.Table.renderAll();
         this.Player01.renderAll();

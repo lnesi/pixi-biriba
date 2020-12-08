@@ -45,5 +45,8 @@ export default class CardGroup {
     public faceDownAll() {
         this.hand.forEach((card) => { card.faceDown() })
     }
+    public unselectAll(){
+        this.hand.forEach((card) => { card.selected=false })
+    }
 }
 

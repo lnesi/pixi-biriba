@@ -11,6 +11,6 @@ box-sizing: border-box;
 `;
 
 export default function Interface() {
-    return <div><Container><button>Discard</button><button>Down</button></Container></div>
+    return <div><Container><button>Discard</button><button>New Down Pile</button></Container></div>
 }
 

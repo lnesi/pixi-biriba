@@ -11,7 +11,7 @@ export default class Card {
     public Object: PIXI.Container;
     public FrontFace: PIXI.Sprite;
     public BackFace: PIXI.Sprite;
-    
+    public selected:boolean=false;
 
     constructor(set: string, value: number, color: string, isJocker: boolean = false, sheet: PIXI.LoaderResource) {
         this.set = set;
@@ -47,9 +47,17 @@ export default class Card {
         this.Object.removeChildAt[0];
         this.Object.addChild(this.FrontFace)
     }
-    public moveTo(x: number, y: number, delay: number) {
+    public moveTo(x: number, y: number, delay: number=0) {
         TweenMax.to(this.Object,0.5,{x:x,y:y,delay:delay/1000})
     }
-    
+    public  select(){
+        if(!this.selected){
+            this.selected=true;
+            this.moveTo(this.Object.x,(this.Object.y-20));
+        }else{
+            this.selected=false;
+            this.moveTo(this.Object.x,(this.Object.y+20));
+        }
+    }
 
 }
