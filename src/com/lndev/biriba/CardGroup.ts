@@ -38,5 +38,12 @@ export default class CardGroup {
             return a.sortValue - b.sortValue
         });
     }
+    discard(card) {
+
+        this.hand.splice(this.hand.indexOf(card), 1)
+    }
+    public faceDownAll() {
+        this.hand.forEach((card) => { card.faceDown() })
+    }
 }
 

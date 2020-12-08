@@ -34,6 +34,7 @@ class CardsContainer extends PIXI.Container {
             this.addChild(this.cards.hand[i].Object);
         }
     }
+   
 }
 
 
@@ -71,17 +72,35 @@ export default class GameScene {
         this.APP.stage.addChild(this.Player01);
         this.APP.stage.addChild(this.Player02);
 
-        this.Mase.addListener('click', () => {
+        this.Mase.addListener('CARD_CLICK', () => {
             this.game.takeFromMase();
+            
         });
-        this.game.addEventListener('CARD_TAKEN_MASE', (e: any) => {
 
+        this.Table.addListener('CARD_CLICK',(card:Card)=>{
+            this.Player01.cards.hand=[...this.Player01.cards.hand,...this.Table.cards.hand] 
+            this.Player01.cards.sort();
+            this.Table.cards.hand=[];
+            this.removeAll();
+            this.renderAll();
+        });
+
+        this.Player01.addListener('CARD_CLICK', (card:Card) => {
+           //console.log(card)
+           this.Table.cards.hand.push(card);
+           this.Player01.cards.discard(card);
+           this.removeAll();
+           this.renderAll();
+
+        });
+        
+        this.game.addEventListener('CARD_TAKEN_MASE', (e: any) => {
             e.detail.player.hand.push(e.detail.card);
             e.detail.player.sort();
             this.removeAll();
             this.renderAll();
-
         })
+
         this.renderAll();
         // Add Card Pile
 
@@ -94,6 +113,8 @@ export default class GameScene {
         this.Player02.removeAll();
     }
     private renderAll() {
+        this.Mase.cards.faceDownAll();
+        this.Mase.cards.hand[this.Mase.cards.hand.length-1].faceUp();
         this.Mase.renderAll();
         this.Table.renderAll();
         this.Player01.renderAll();

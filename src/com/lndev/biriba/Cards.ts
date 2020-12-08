@@ -17,4 +17,5 @@ export default class Cards {
     this.hand.push(new Card("J", 14, color, true, sheet));
     
   }
+  
 }

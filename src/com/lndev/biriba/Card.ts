@@ -11,6 +11,7 @@ export default class Card {
     public Object: PIXI.Container;
     public FrontFace: PIXI.Sprite;
     public BackFace: PIXI.Sprite;
+    
 
     constructor(set: string, value: number, color: string, isJocker: boolean = false, sheet: PIXI.LoaderResource) {
         this.set = set;
@@ -36,7 +37,7 @@ export default class Card {
         this.Object.addListener('click',this.handlerClick.bind(this))
     }
     public handlerClick(e){
-        console.log(this)
+       this.Object.parent.emit('CARD_CLICK',this);
     }
     public faceDown() {
         this.Object.removeChildAt[0];
@@ -49,5 +50,6 @@ export default class Card {
     public moveTo(x: number, y: number, delay: number) {
         TweenMax.to(this.Object,0.5,{x:x,y:y,delay:delay/1000})
     }
+    
 
 }

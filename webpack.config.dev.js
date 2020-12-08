@@ -1,7 +1,7 @@
 const path = require("path");
 module.exports = {
   mode: "development",
-  entry: "./src/index.ts",
+  entry: "./src/index.tsx",
   output: {
     filename: "main.js",
     path: path.resolve(__dirname, "public"),
@@ -12,6 +12,11 @@ module.exports = {
       {
         test: /\.tsx?$/,
         use: "ts-loader",
+        exclude: /node_modules/,
+      },
+      {
+        test: /\.js?$/,
+        use: "babel-loader",
         exclude: /node_modules/,
       },
     ],
