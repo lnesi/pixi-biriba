@@ -77,6 +77,7 @@ export default class GameScene {
         this.game.addEventListener('CARD_TAKEN_MASE', (e: any) => {
 
             e.detail.player.hand.push(e.detail.card);
+            e.detail.player.sort();
             this.removeAll();
             this.renderAll();
 

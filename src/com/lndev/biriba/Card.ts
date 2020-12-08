@@ -1,3 +1,4 @@
+import TweenMax from 'gsap'
 export default class Card {
     public static SET_VALUE
         = { 'D': 20, 'S': 40, 'H': 60, 'C': 80, 'J': 0 };
@@ -31,6 +32,11 @@ export default class Card {
         this.Object.addChild(this.FrontFace);
         this.Object.scale.x = .5
         this.Object.scale.y = .5
+        this.Object.interactive=true;
+        this.Object.addListener('click',this.handlerClick.bind(this))
+    }
+    public handlerClick(e){
+        console.log(this)
     }
     public faceDown() {
         this.Object.removeChildAt[0];
@@ -41,16 +47,7 @@ export default class Card {
         this.Object.addChild(this.FrontFace)
     }
     public moveTo(x: number, y: number, delay: number) {
-        setTimeout(() => {
-            setInterval(() => {
-                if (this.Object.x < x)
-                    this.Object.x += 5;
-                if (this.Object.y < y)
-                    this.Object.y += 5;
-            }, 5)
-        }, delay)
-
-
+        TweenMax.to(this.Object,0.5,{x:x,y:y,delay:delay/1000})
     }
 
 }
