@@ -40,8 +40,10 @@ class CardsContainer extends PIXI.Container {
 
 class Player extends CardsContainer {
     public name: string
+    public selectedCards: CardGroup;
     constructor(name: string, cards: CardGroup, yInit: number, yOffset: number) {
         super(cards, 100, 25, yInit, yOffset);
+        this.selectedCards = new CardGroup();
         this.name = name;
         this.addListener('CARD_CLICK', this.onCardClick.bind(this))
     }
@@ -87,15 +89,24 @@ export default class GameScene {
             this.removeAll();
             this.renderAll();
         });
+        window.addEventListener("CLICK_DISCARD", () => {
 
-        // this.Player01.addListener('CARD_CLICK', (card:Card) => {
-        //    //console.log(card)
-        //    this.Table.cards.hand.push(card);
-        //    this.Player01.cards.discard(card);
-        //    this.removeAll();
-        //    this.renderAll();
-
-        // });
+            if (this.Player01.selectedCards.hand.length === 0) {
+                alert("Select a card to discard");
+            } else if (this.Player01.selectedCards.hand.length === 1) {
+                this.Player01.cards.discard(this.Player01.selectedCards.hand[0]);
+                this.Table.cards.hand.push(this.Player01.selectedCards.hand[0])
+                this.Player01.selectedCards.hand=[];
+                this.removeAll();
+                this.renderAll();
+            } else {
+                alert("Only one card can be discarded");
+            }
+        })
+        this.Player01.addListener('CARD_CLICK', (card: Card) => {
+            //console.log(card)
+            this.Player01.selectedCards.hand.push(card);
+        });
 
         this.game.addEventListener('CARD_TAKEN_MASE', (e: any) => {
             e.detail.player.hand.push(e.detail.card);

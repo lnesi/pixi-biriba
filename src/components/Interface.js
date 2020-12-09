@@ -11,6 +11,10 @@ box-sizing: border-box;
 `;
 
 export default function Interface() {
-    return <div><Container><button>Discard</button><button>New Down Pile</button></Container></div>
+    const handleDiscard = () => {
+        window.dispatchEvent(new Event("CLICK_DISCARD"));
+        
+    }
+    return <div><Container><button onClick={handleDiscard}>Discard</button><button>New Down Pile</button></Container></div>
 }
 
