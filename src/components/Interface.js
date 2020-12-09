@@ -10,9 +10,9 @@ padding: 1rem;
 box-sizing: border-box;
 `;
 
-export default function Interface() {
+export default function Interface(props) {
     const handleDiscard = () => {
-        window.dispatchEvent(new Event("CLICK_DISCARD"));
+        props.game.dispatchEvent(new Event("CLICK_DISCARD"));
         
     }
     return <div><Container><button onClick={handleDiscard}>Discard</button><button>New Down Pile</button></Container></div>

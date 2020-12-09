@@ -41,11 +41,15 @@ class CardsContainer extends PIXI.Container {
 class Player extends CardsContainer {
     public name: string
     public selectedCards: CardGroup;
+    public tablet:Array<CardGroup>=[];
+    public hand:CardGroup;
     constructor(name: string, cards: CardGroup, yInit: number, yOffset: number) {
         super(cards, 100, 25, yInit, yOffset);
         this.selectedCards = new CardGroup();
         this.name = name;
-        this.addListener('CARD_CLICK', this.onCardClick.bind(this))
+        this.hand=this.cards;//Shorcut
+        this.addListener('CARD_CLICK', this.onCardClick.bind(this));
+        
     }
     private onCardClick(card) {
         card.select()
@@ -64,7 +68,7 @@ export default class GameScene {
     public Player01: Player;
     public Player02: Player;
     public game: Game;
-
+    public takenFromPile:boolean=false;
     constructor(app: PIXI.Application, game: Game) {
         this.APP = app;
         this.game = game;
@@ -79,7 +83,6 @@ export default class GameScene {
 
         this.Mase.addListener('CARD_CLICK', () => {
             this.game.takeFromMase();
-
         });
 
         this.Table.addListener('CARD_CLICK', (card: Card) => {
@@ -89,7 +92,7 @@ export default class GameScene {
             this.removeAll();
             this.renderAll();
         });
-        window.addEventListener("CLICK_DISCARD", () => {
+        this.game.addEventListener("CLICK_DISCARD", () => {
 
             if (this.Player01.selectedCards.hand.length === 0) {
                 alert("Select a card to discard");
@@ -105,12 +108,18 @@ export default class GameScene {
         })
         this.Player01.addListener('CARD_CLICK', (card: Card) => {
             //console.log(card)
+           if( this.Player01.selectedCards.hand.indexOf(card)===-1){
             this.Player01.selectedCards.hand.push(card);
+           }else{
+               this.Player01.selectedCards.discard(card);
+           }
+            
         });
 
         this.game.addEventListener('CARD_TAKEN_MASE', (e: any) => {
-            e.detail.player.hand.push(e.detail.card);
-            e.detail.player.sort();
+
+            this.Player01.cards.hand.push(e.detail.card);
+            this.Player01.cards.hand.sort();
             this.removeAll();
             this.renderAll();
         })
@@ -120,6 +129,7 @@ export default class GameScene {
 
 
     }
+    
     private removeAll() {
         this.Mase.removeAll();
         this.Table.removeAll();

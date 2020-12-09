@@ -10,6 +10,8 @@ import React, { useState } from "react";
 import { render } from "react-dom";
 import Interface from './components/Interface';
 
+
+
 const app = new PIXI.Application({ width: 1024, height: 768, backgroundColor: 0x315439 });
 document.getElementById('canvas').appendChild(app.view);
 
@@ -19,15 +21,15 @@ let sheet = null
 const loader = new PIXI.Loader();
 loader.add("sprites/cards.json");
 loader.load(loadHandler);
+
 function loadHandler(loader: PIXI.Loader, resources: any) {
     sheet = resources["sprites/cards.json"];
     game.createCards(sheet);
     game.deal();
     const pixi=new GameScene(app, game);
 
-    render(<Interface pixi={pixi}/>, document.getElementById("root"));
+    render(<Interface game={game}/>, document.getElementById("root"));
 }
-
 
 
 
