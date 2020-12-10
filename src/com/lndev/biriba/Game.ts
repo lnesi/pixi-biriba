@@ -13,7 +13,6 @@ const initialState = {
 };
 
 export default class Game extends EventTarget {
-  public store: Store;
   private database: any;
   public store: Store;
   public tableUUID: string = null;
