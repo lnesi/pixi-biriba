@@ -10,6 +10,7 @@ const initialState = {
   currentPlayer: 0, //Local
   currentTurn: 0,
   user: null,
+  takenMase: false,
 };
 
 export default class Game extends EventTarget {
@@ -70,6 +71,11 @@ export default class Game extends EventTarget {
       case "DEAL":
         newState = this.deal(newState);
         break;
+      case "TAKE_MASE":
+        const card = newState.mase.shift();
+        newState.takenMase = true;
+        newState.players[newState.currentPlayer].push(card);
+        break;
       case "CREATE_CARDS":
         newState = { ...newState, mase: action.payload };
         break;
@@ -89,6 +95,7 @@ export default class Game extends EventTarget {
       });
     });
   }
+
   deal(state) {
     const newState = {
       ...state,
@@ -143,7 +150,19 @@ class CardSet {
         });
       }
     }
-    this.hand.push({ set: "J", value: 14, color, isJoker: true });
-    this.hand.push({ set: "J", value: 14, color, isJoker: true });
+    this.hand.push({
+      set: "J",
+      value: 14,
+      color,
+      isJoker: true,
+      selected: false,
+    });
+    this.hand.push({
+      set: "J",
+      value: 14,
+      color,
+      isJoker: true,
+      selected: false,
+    });
   }
 }

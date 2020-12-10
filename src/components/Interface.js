@@ -104,7 +104,11 @@ export default function Interface(props) {
               </p>
               <ActionButtonn
                 onClick={() => {
-                  dispatch({ type: "TAKE_MASE" });
+                  if (!state.takenMase) {
+                    dispatch({ type: "TAKE_MASE" });
+                  } else {
+                    alert("You already took a card");
+                  }
                 }}
               >
                 take mase
