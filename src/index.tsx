@@ -3,19 +3,19 @@ global.PIXI = PIXI;
 import "pixi-projection";
 //https://pixijs.io/examples/#/plugin-projection/cards.js
 import Game from './com/lndev/biriba/Game';
-import GameScene from './com/lndev/biriba/GameScene'
-import CardGroup from "./com/lndev/biriba/CardGroup";
+//import GameScene from './com/lndev/biriba/GameScene'
+//import CardGroup from "./com/lndev/biriba/CardGroup";
 
 import React, { useState } from "react";
 import { render } from "react-dom";
 import Interface from './components/Interface';
-
+import Database from './com/lndev/biriba/Database'; 
 
 
 const app = new PIXI.Application({ width: 1024, height: 768, backgroundColor: 0x315439 });
 document.getElementById('canvas').appendChild(app.view);
 
-const game = new Game();
+const game = new Game(Database);
 
 let sheet = null
 const loader = new PIXI.Loader();
@@ -24,12 +24,13 @@ loader.load(loadHandler);
 
 function loadHandler(loader: PIXI.Loader, resources: any) {
     sheet = resources["sprites/cards.json"];
-    game.createCards(sheet);
-    game.deal();
-    const pixi=new GameScene(app, game);
-
+    // game.createCards(sheet);
+    // game.deal();
+    //const pixi=new GameScene(app, game);
     render(<Interface game={game}/>, document.getElementById("root"));
 }
+
+
 
 
 

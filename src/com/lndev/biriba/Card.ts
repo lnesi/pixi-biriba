@@ -59,5 +59,6 @@ export default class Card {
             this.moveTo(this.Object.x,(this.Object.y+20));
         }
     }
+  
 
 }
