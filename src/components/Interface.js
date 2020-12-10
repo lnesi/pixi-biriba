@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 import { set } from "lodash";
+import { GameContext } from "../index";
+
 const Container = styled.div`
   position: relative;
   width: 100vw;
@@ -20,10 +22,10 @@ export default function Interface(props) {
   const handleDiscard = () => {
     props.game.dispatchEvent(new Event("CLICK_DISCARD"));
   };
-
+  const game = useContext(GameContext);
   const state = useSelector((state) => state);
   const dispatch = useDispatch();
-  const [table, setTable] = useState("05339b44-92dd-4e89-99c6-a28d993b281f");
+  const [table, setTable] = useState("b999dbaa-89b9-4184-a755-e90ab029083e");
   return (
     <div>
       <Table>
@@ -96,20 +98,50 @@ export default function Interface(props) {
                 join table
               </button>
               <br />
-              <button>take mase</button>
+              <ActionButtonn
+                onClick={() => {
+                  dispatch({ type: "TAKE_MASE" });
+                }}
+              >
+                take mase
+              </ActionButtonn>
               <br />
-              <button>discard</button>
+              <ActionButtonn
+                onClick={() => {
+                  dispatch({ type: "DISCARD" });
+                }}
+              >
+                discard
+              </ActionButtonn>
               <br />
-              <button>take table</button>
+              <ActionButtonn
+                onClick={() => {
+                  dispatch({ type: "TAKE_TABLE" });
+                }}
+              >
+                Take Table
+              </ActionButtonn>
 
               <br />
-              <button>put down </button>
+              <ActionButtonn
+                onClick={() => {
+                  dispatch({ type: "PUT_DOWN" });
+                }}
+              >
+                Put Down
+              </ActionButtonn>
               <br />
             </td>
             <td>
+              Table:{game.tableUUID}
+              <br />
               User:{state.user}
               <br />
               Status:{state.currentPlayer === 0 ? "Local" : "Remote"}
+              <br />
+              Player:{state.currentPlayer}
+              <br />
+              Turn:{state.currentTurn}
               <br />
             </td>
           </tr>
@@ -129,5 +161,27 @@ function Card(i, card) {
       {i}-{icons[card.set]}
       {card.value}
     </div>
+  );
+}
+
+function ActionButtonn(props) {
+  const game = useContext(GameContext);
+  const state = useSelector((state) => state);
+  return (
+    <button
+      onClick={() => {
+        if (game.tableUUID) {
+          if (state.currentPlayer === state.currentTurn) {
+            props.onClick();
+          } else {
+            alert("Is not your turn");
+          }
+        } else {
+          alert("join or create a game");
+        }
+      }}
+    >
+      {props.children}
+    </button>
   );
 }

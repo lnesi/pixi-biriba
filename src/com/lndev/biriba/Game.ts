@@ -14,7 +14,7 @@ const initialState = {
 export default class Game extends EventTarget {
   private database: any;
   public store: Store;
-  public tabletUUID: string = null;
+  public tableUUID: string = null;
   constructor(firebase) {
     super();
     this.database = firebase.database();
@@ -25,8 +25,6 @@ export default class Game extends EventTarget {
       .auth()
       .signInAnonymously()
       .then((data) => {
-        console.log("loggedin");
-
         this.store.dispatch({ type: "SET_USER", payload: data.user.uid });
       })
       .catch((error) => {
@@ -46,13 +44,13 @@ export default class Game extends EventTarget {
         newState = { ...newState, user: action.payload };
         break;
       case "CREATE_TABLE":
-        this.tabletUUID = uuidv4();
+        this.tableUUID = uuidv4();
         break;
       case "JOIN_TABLE":
-        this.tabletUUID = action.payload;
+        this.tableUUID = action.payload;
         write = false;
         this.database
-          .ref("tables/" + this.tabletUUID)
+          .ref("tables/" + this.tableUUID)
           .once("value")
           .then((snapshot) => {
             this.store.dispatch({
@@ -74,7 +72,7 @@ export default class Game extends EventTarget {
         newState;
     }
     if (write) {
-      this.database.ref("tables/" + this.tabletUUID).set({
+      this.database.ref("tables/" + this.tableUUID).set({
         ...newState,
       });
     }
