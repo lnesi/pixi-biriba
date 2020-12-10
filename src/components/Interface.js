@@ -14,6 +14,7 @@ const Container = styled.div`
 `;
 
 const Table = styled.table`
+  width: 100%;
   td {
     vertical-align: top;
   }
@@ -25,7 +26,7 @@ export default function Interface(props) {
   const game = useContext(GameContext);
   const state = useSelector((state) => state);
   const dispatch = useDispatch();
-  const [table, setTable] = useState("b999dbaa-89b9-4184-a755-e90ab029083e");
+  const [table, setTable] = useState("a1a43a6b-2de0-4ad1-8a72-923d5ee44a84");
   return (
     <div>
       <Table>
@@ -74,30 +75,33 @@ export default function Interface(props) {
               })}
             </td>
             <td>
-              <button
-                onClick={() => {
-                  dispatch({ type: "CREATE_TABLE" });
-                  dispatch({ type: "DEAL" });
-                }}
-              >
-                create table
-              </button>
-              <br />
-              <input
-                type="text"
-                value={table}
-                onChange={(e) => {
-                  setTable(e.target.value);
-                }}
-              />
-              <button
-                onClick={() => {
-                  dispatch({ type: "JOIN_TABLE", payload: table });
-                }}
-              >
-                join table
-              </button>
-              <br />
+              <p>
+                <button
+                  onClick={() => {
+                    dispatch({ type: "CREATE_TABLE" });
+                    dispatch({ type: "DEAL" });
+                  }}
+                >
+                  create table
+                </button>
+                <br />
+                <br />
+                <input
+                  type="text"
+                  value={table}
+                  onChange={(e) => {
+                    setTable(e.target.value);
+                  }}
+                />
+                <br />
+                <button
+                  onClick={() => {
+                    game.joinTable(table);
+                  }}
+                >
+                  join table
+                </button>
+              </p>
               <ActionButtonn
                 onClick={() => {
                   dispatch({ type: "TAKE_MASE" });
@@ -131,15 +135,22 @@ export default function Interface(props) {
                 Put Down
               </ActionButtonn>
               <br />
+              <button
+                onClick={() => {
+                  dispatch({ type: "SORT_HAND", payload: table });
+                }}
+              >
+                sort hand
+              </button>
             </td>
             <td>
               Table:{game.tableUUID}
               <br />
               User:{state.user}
               <br />
-              Status:{state.currentPlayer === 0 ? "Local" : "Remote"}
+              Status:{game.currentPlayer === 0 ? "Local" : "Remote"}
               <br />
-              Player:{state.currentPlayer}
+              Player:{game.currentPlayer}
               <br />
               Turn:{state.currentTurn}
               <br />
@@ -171,7 +182,7 @@ function ActionButtonn(props) {
     <button
       onClick={() => {
         if (game.tableUUID) {
-          if (state.currentPlayer === state.currentTurn) {
+          if (game.currentPlayer === state.currentTurn) {
             props.onClick();
           } else {
             alert("Is not your turn");

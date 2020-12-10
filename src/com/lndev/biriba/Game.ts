@@ -1,4 +1,4 @@
-import { createStore, Store } from "redux";
+import { createStore, Store, applyMiddleware } from "redux";
 import { v4 as uuidv4 } from "uuid";
 import _ from "lodash";
 const initialState = {
@@ -11,14 +11,19 @@ const initialState = {
   currentTurn: 0,
   user: null,
 };
+
 export default class Game extends EventTarget {
   private database: any;
   public store: Store;
   public tableUUID: string = null;
+  public currentPlayer = 0;
   constructor(firebase) {
     super();
     this.database = firebase.database();
-    this.store = createStore(this.reducer.bind(this));
+    this.store = createStore(
+      this.reducer.bind(this),
+      applyMiddleware(this.firebaseMiddlware.bind(this))
+    );
     var cards = [...new CardSet("R").hand, ...new CardSet("B").hand];
     this.store.dispatch({ type: "CREATE_CARDS", payload: cards });
     firebase
@@ -34,9 +39,14 @@ export default class Game extends EventTarget {
       });
   }
 
+  firebaseMiddlware = (storeAPI) => (next) => (action) => {
+    console.log("dispatching", action);
+    let result = next(action);
+    this.database.ref("tables/" + this.tableUUID).set(storeAPI.getState());
+    return result;
+  };
+
   reducer(state = initialState, action) {
-    console.log(action, state);
-    let write = true;
     let newState = { ...state, lastAction: action.type };
 
     switch (action.type) {
@@ -45,20 +55,15 @@ export default class Game extends EventTarget {
         break;
       case "CREATE_TABLE":
         this.tableUUID = uuidv4();
-        break;
-      case "JOIN_TABLE":
-        this.tableUUID = action.payload;
-        write = false;
-        this.database
-          .ref("tables/" + this.tableUUID)
-          .once("value")
-          .then((snapshot) => {
-            this.store.dispatch({
-              type: "UPDATE_STATE",
-              payload: snapshot.val(),
-            });
+        const ref1 = this.database.ref("tables/" + this.tableUUID);
+        ref1.on("value", (snapshot) => {
+          this.store.dispatch({
+            type: "UPDATE_STATE",
+            payload: snapshot.val(),
           });
+        });
         break;
+
       case "UPDATE_STATE":
         newState = { ...action.payload, currentPlayer: 1 }; //Remote
         break;
@@ -71,15 +76,19 @@ export default class Game extends EventTarget {
       default:
         newState;
     }
-    if (write) {
-      this.database.ref("tables/" + this.tableUUID).set({
-        ...newState,
-      });
-    }
-
     return newState;
   }
-
+  joinTable(tableuuid) {
+    this.tableUUID = tableuuid;
+    this.currentPlayer = 1;
+    const ref2 = this.database.ref("tables/" + this.tableUUID);
+    ref2.on("value", (snapshot) => {
+      this.store.dispatch({
+        type: "UPDATE_STATE",
+        payload: snapshot.val(),
+      });
+    });
+  }
   deal(state) {
     const newState = {
       ...state,
