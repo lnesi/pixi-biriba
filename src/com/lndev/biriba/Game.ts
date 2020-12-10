@@ -1,10 +1,20 @@
 import { createStore, Store } from "redux";
+import { v4 as uuidv4 } from "uuid";
 import _ from "lodash";
-
+const initialState = {
+  mase: [],
+  table: [],
+  players: [[], []],
+  piles: [[], []],
+  lastAction: "START",
+  currentPlayer: 0, //Local
+  currentTurn: 0,
+  user: null,
+};
 export default class Game extends EventTarget {
   private database: any;
   public store: Store;
-
+  public tabletUUID: string = null;
   constructor(firebase) {
     super();
     this.database = firebase.database();
@@ -14,9 +24,10 @@ export default class Game extends EventTarget {
     firebase
       .auth()
       .signInAnonymously()
-      .then(() => {
+      .then((data) => {
         console.log("loggedin");
-        this.store.dispatch({ type: "DEAL" });
+
+        this.store.dispatch({ type: "SET_USER", payload: data.user.uid });
       })
       .catch((error) => {
         var errorCode = error.code;
@@ -25,21 +36,34 @@ export default class Game extends EventTarget {
       });
   }
 
-  reducer(
-    state = {
-      mase: [],
-      table: [],
-      players: [[], []],
-      piles: [[], []],
-      lastAction: "START",
-      currentPlayer: 0,
-    },
-    action
-  ) {
+  reducer(state = initialState, action) {
     console.log(action, state);
+    let write = true;
     let newState = { ...state, lastAction: action.type };
 
     switch (action.type) {
+      case "SET_USER":
+        newState = { ...newState, user: action.payload };
+        break;
+      case "CREATE_TABLE":
+        this.tabletUUID = uuidv4();
+        break;
+      case "JOIN_TABLE":
+        this.tabletUUID = action.payload;
+        write = false;
+        this.database
+          .ref("tables/" + this.tabletUUID)
+          .once("value")
+          .then((snapshot) => {
+            this.store.dispatch({
+              type: "UPDATE_STATE",
+              payload: snapshot.val(),
+            });
+          });
+        break;
+      case "UPDATE_STATE":
+        newState = { ...action.payload, currentPlayer: 1 }; //Remote
+        break;
       case "DEAL":
         newState = this.deal(newState);
         break;
@@ -49,9 +73,12 @@ export default class Game extends EventTarget {
       default:
         newState;
     }
-    this.database.ref("tables/" + "uuid-table").set({
-      ...newState,
-    });
+    if (write) {
+      this.database.ref("tables/" + this.tabletUUID).set({
+        ...newState,
+      });
+    }
+
     return newState;
   }
 
