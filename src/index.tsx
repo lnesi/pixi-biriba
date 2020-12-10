@@ -1,36 +1,14 @@
-import * as PIXI from "pixi.js"
-global.PIXI = PIXI;
-import "pixi-projection";
-//https://pixijs.io/examples/#/plugin-projection/cards.js
-import Game from './com/lndev/biriba/Game';
-//import GameScene from './com/lndev/biriba/GameScene'
-//import CardGroup from "./com/lndev/biriba/CardGroup";
-
+import Game from "./com/lndev/biriba/Game";
 import React, { useState } from "react";
 import { render } from "react-dom";
-import Interface from './components/Interface';
-import Database from './com/lndev/biriba/Database'; 
+import Interface from "./components/Interface";
+import firebase from "./com/lndev/biriba/Firebase";
+import { Provider } from "react-redux";
+const game = new Game(firebase);
 
-
-const app = new PIXI.Application({ width: 1024, height: 768, backgroundColor: 0x315439 });
-document.getElementById('canvas').appendChild(app.view);
-
-const game = new Game(Database);
-
-let sheet = null
-const loader = new PIXI.Loader();
-loader.add("sprites/cards.json");
-loader.load(loadHandler);
-
-function loadHandler(loader: PIXI.Loader, resources: any) {
-    sheet = resources["sprites/cards.json"];
-    // game.createCards(sheet);
-    // game.deal();
-    //const pixi=new GameScene(app, game);
-    render(<Interface game={game}/>, document.getElementById("root"));
-}
-
-
-
-
-
+render(
+  <Provider store={game.store}>
+    <Interface />
+  </Provider>,
+  document.getElementById("root")
+);
