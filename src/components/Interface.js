@@ -34,7 +34,9 @@ export default function Interface(props) {
           <tr>
             <th>Mase</th>
             <th>Player1</th>
+            <th>Selected</th>
             <th>Player2</th>
+            <th>Selected</th>
             <th>Pile1</th>
             <th>Pile2</th>
             <th>Table</th>
@@ -55,9 +57,21 @@ export default function Interface(props) {
               })}
             </td>
             <td>
+              {state.selectedCards &&
+                state.selectedCards[0].map((card, i) => {
+                  return Card(i, card);
+                })}
+            </td>
+            <td>
               {state.players[1].map((card, i) => {
                 return Card(i, card);
               })}
+            </td>
+            <td>
+              {state.selectedCards &&
+                state.selectedCards[1].map((card, i) => {
+                  return Card(i, card);
+                })}
             </td>
             <td>
               {state.piles[0].map((card, i) => {
@@ -172,6 +186,9 @@ function Card(i, card) {
     <div
       key={i}
       style={{ color: card.set === "H" || card.set === "D" ? "red" : "black" }}
+      onClick={() => {
+        console.log(card);
+      }}
     >
       {i}-{icons[card.set]}
       {card.value}

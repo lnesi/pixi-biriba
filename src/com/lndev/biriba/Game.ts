@@ -11,6 +11,7 @@ const initialState = {
   currentTurn: 0,
   user: null,
   takenMase: false,
+  selectedCards: [[], []],
 };
 
 export default class Game extends EventTarget {
@@ -66,7 +67,7 @@ export default class Game extends EventTarget {
         break;
 
       case "UPDATE_STATE":
-        newState = { ...action.payload, currentPlayer: 1 }; //Remote
+        newState = { ...action.payload }; //Remote
         break;
       case "DEAL":
         newState = this.deal(newState);
@@ -75,6 +76,11 @@ export default class Game extends EventTarget {
         const card = newState.mase.shift();
         newState.takenMase = true;
         newState.players[newState.currentPlayer].push(card);
+        break;
+      case "SORT_HAND":
+        newState.players[newState.currentPlayer] = this.sort(
+          newState.players[newState.currentPlayer]
+        );
         break;
       case "CREATE_CARDS":
         newState = { ...newState, mase: action.payload };
@@ -96,10 +102,20 @@ export default class Game extends EventTarget {
     });
   }
 
+  public sort(playerCards) {
+    let cards = [];
+    cards = playerCards.sort((a, b) => {
+      return a.sortValue - b.sortValue;
+    });
+    console.log(cards);
+    return cards;
+  }
+
   deal(state) {
     const newState = {
       ...state,
       players: [[], []],
+      selectedCards: [[], []],
       piles: [[], []],
       table: [],
     };
@@ -135,8 +151,9 @@ export default class Game extends EventTarget {
 class CardSet {
   static COLORS = ["R", "B", "G"];
   static SETS = ["C", "D", "S", "H"];
-
   static VALUES = [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+  static SET_VALUE = { D: 20, S: 40, H: 60, C: 80, J: 0 };
+
   public hand: Array<any>;
   constructor(color: string = "R") {
     this.hand = [];
@@ -145,6 +162,7 @@ class CardSet {
         this.hand.push({
           set: CardSet.SETS[j],
           value: CardSet.VALUES[i],
+          sortValue: CardSet.VALUES[i] + CardSet.SET_VALUE[CardSet.SETS[j]],
           color: color,
           isJoker: false,
         });
