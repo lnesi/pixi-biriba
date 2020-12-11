@@ -26,7 +26,7 @@ export default function Interface(props) {
   const game = useContext(GameContext);
   const state = useSelector((state) => state);
   const dispatch = useDispatch();
-  const [table, setTable] = useState("a1a43a6b-2de0-4ad1-8a72-923d5ee44a84");
+  const [table, setTable] = useState("b7918061-5f3b-41fa-aa57-80d803fe7129");
   return (
     <div>
       <Table>

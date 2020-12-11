@@ -75,11 +75,11 @@ export default class Game extends EventTarget {
       case "TAKE_MASE":
         const card = newState.mase.shift();
         newState.takenMase = true;
-        newState.players[newState.currentPlayer].push(card);
+        newState.players[this.currentPlayer].push(card);
         break;
       case "SORT_HAND":
-        newState.players[newState.currentPlayer] = this.sort(
-          newState.players[newState.currentPlayer]
+        newState.players[this.currentPlayer] = this.sort(
+          newState.players[this.currentPlayer]
         );
         break;
       case "CREATE_CARDS":
