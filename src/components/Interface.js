@@ -26,7 +26,7 @@ export default function Interface(props) {
   const game = useContext(GameContext);
   const state = useSelector((state) => state);
   const dispatch = useDispatch();
-  const [table, setTable] = useState("6a0faa69-8435-449a-82cf-bceb8087c86d");
+  const [table, setTable] = useState("30bead1b-e8d2-4918-bab8-a584b515b4ba");
   return (
     <div>
       <Table>
@@ -58,6 +58,7 @@ export default function Interface(props) {
             </td>
             <td>
               {state.selectedCards &&
+                state.selectedCards[0] &&
                 state.selectedCards[0].map((card, i) => {
                   return Card(i, card);
                 })}
@@ -69,6 +70,7 @@ export default function Interface(props) {
             </td>
             <td>
               {state.selectedCards &&
+                state.selectedCards[1] &&
                 state.selectedCards[1].map((card, i) => {
                   return Card(i, card);
                 })}
@@ -93,6 +95,7 @@ export default function Interface(props) {
                 <button
                   onClick={() => {
                     dispatch({ type: "CREATE_TABLE" });
+
                     dispatch({ type: "DEAL" });
                   }}
                 >
@@ -164,7 +167,7 @@ export default function Interface(props) {
             <td>
               Table:{game.tableUUID}
               <br />
-              User:{state.user}
+              Owner:{state.tableOwnerID}
               <br />
               Status:{game.currentPlayer === 0 ? "Local" : "Remote"}
               <br />
@@ -182,12 +185,13 @@ export default function Interface(props) {
 
 function Card(i, card) {
   const icons = { H: "♥", D: "♦", S: "♠", C: "♣", J: "JOKER" };
+  const dispatch = useDispatch();
   return (
     <div
       key={i}
       style={{ color: card.set === "H" || card.set === "D" ? "red" : "black" }}
       onClick={() => {
-        console.log(card);
+        dispatch({ type: "CARD_CLICK", payload: card });
       }}
     >
       {i}-{icons[card.set]}
@@ -199,6 +203,7 @@ function Card(i, card) {
 function ActionButtonn(props) {
   const game = useContext(GameContext);
   const state = useSelector((state) => state);
+
   return (
     <button
       onClick={() => {

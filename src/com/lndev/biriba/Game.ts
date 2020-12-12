@@ -13,7 +13,7 @@ const initialState = {
   lastAction: "START",
   currentPlayer: 0, //Local
   currentTurn: 0,
-  user: null,
+  tableOwnerID: null,
   takenMase: false,
   selectedCards: [[], []],
 };
@@ -23,6 +23,7 @@ export default class Game extends EventTarget {
   public store: Store;
   public tableUUID: string = null;
   public currentPlayer = 0;
+  public currentUserID = null;
   constructor(firebase) {
     super();
     this.database = firebase.database();
@@ -37,6 +38,7 @@ export default class Game extends EventTarget {
       .signInAnonymously()
       .then((data) => {
         this.store.dispatch({ type: "SET_USER", payload: data.user.uid });
+        this.currentUserID = data.user.uid;
       })
       .catch((error) => {
         var errorCode = error.code;
@@ -57,7 +59,7 @@ export default class Game extends EventTarget {
 
     switch (action.type) {
       case "SET_USER":
-        newState = { ...newState, user: action.payload };
+        newState = { ...newState, tableOwnerID: action.payload };
         break;
       case "CREATE_TABLE":
         this.tableUUID = uuidv4();
@@ -90,6 +92,34 @@ export default class Game extends EventTarget {
       case "CREATE_CARDS":
         newState = { ...newState, mase: action.payload };
         break;
+      case "CARD_CLICK":
+        switch (action.payload.location) {
+          case "mase":
+          case "player1":
+            _.remove(newState.players[0].hand, action.payload);
+            action.payload.location = "selected1";
+            if (!newState.selectedCards) newState.selectedCards = [[], []];
+            if (!newState.selectedCards[0]) newState.selectedCards[0] = [];
+            newState.selectedCards[0].push(action.payload);
+            break;
+          case "player2":
+            _.remove(newState.players[1].hand, action.payload);
+            action.payload.location = "selected2";
+            if (!newState.selectedCards) newState.selectedCards = [[], []];
+            if (!newState.selectedCards[1]) newState.selectedCards[1] = [];
+            newState.selectedCards[1].push(action.payload);
+            break;
+          case "selected1":
+            _.remove(newState.selectedCards[0], action.payload);
+            action.payload.location = "player1";
+            newState.players[0].hand.push(action.payload);
+            break;
+          case "selected2":
+            _.remove(newState.selectedCards[1], action.payload);
+            action.payload.location = "player2";
+            newState.players[1].hand.push(action.payload);
+            break;
+        }
       default:
         newState;
     }
@@ -121,9 +151,10 @@ export default class Game extends EventTarget {
       ...state,
       table: [],
       players: [
-        { uid: null, location: "player1", hand: [] },
+        { uid: this.currentUserID, location: "player1", hand: [] },
         { uid: null, location: "player2", hand: [] },
       ],
+      selectedCards: [[], []],
       piles: [[], []],
     };
     newState.mase = _.shuffle(newState.mase);
