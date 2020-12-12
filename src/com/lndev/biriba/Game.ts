@@ -1,10 +1,14 @@
 import { createStore, Store, applyMiddleware } from "redux";
 import { v4 as uuidv4 } from "uuid";
 import _ from "lodash";
+
 const initialState = {
   mase: [],
   table: [],
-  players: [[], []],
+  players: [
+    { uid: null, location: "player1", hand: [] },
+    { uid: null, location: "player2", hand: [] },
+  ],
   piles: [[], []],
   lastAction: "START",
   currentPlayer: 0, //Local
@@ -75,11 +79,12 @@ export default class Game extends EventTarget {
       case "TAKE_MASE":
         const card = newState.mase.shift();
         newState.takenMase = true;
-        newState.players[this.currentPlayer].push(card);
+        card.location = "player" + (this.currentPlayer + 1);
+        newState.players[this.currentPlayer].hand.push(card);
         break;
       case "SORT_HAND":
-        newState.players[this.currentPlayer] = this.sort(
-          newState.players[this.currentPlayer]
+        newState.players[this.currentPlayer].hand = this.sort(
+          newState.players[this.currentPlayer].hand
         );
         break;
       case "CREATE_CARDS":
@@ -114,19 +119,23 @@ export default class Game extends EventTarget {
   deal(state) {
     const newState = {
       ...state,
-      players: [[], []],
-      selectedCards: [[], []],
-      piles: [[], []],
       table: [],
+      players: [
+        { uid: null, location: "player1", hand: [] },
+        { uid: null, location: "player2", hand: [] },
+      ],
+      piles: [[], []],
     };
     newState.mase = _.shuffle(newState.mase);
     for (var i = 0; i < 22; i++) {
       var card = newState.mase[0];
       newState.mase.shift();
       if (i % 2) {
-        newState.players[0].push(card);
+        card.location = "player1";
+        newState.players[0].hand.push(card);
       } else {
-        newState.players[1].push(card);
+        card.location = "player2";
+        newState.players[1].hand.push(card);
       }
     }
 
@@ -134,16 +143,20 @@ export default class Game extends EventTarget {
       var card = newState.mase[0];
       newState.mase.shift();
       if (i % 2) {
+        card.location = "pile1";
         newState.piles[0].push(card);
       } else {
+        card.location = "pile0";
         newState.piles[1].push(card);
       }
     }
     do {
       var card = newState.mase[0];
+      card.location = "table";
       newState.mase.shift();
       newState.table.push(card);
     } while (newState.table[0].isJocker);
+
     return newState;
   }
 }
@@ -165,6 +178,7 @@ class CardSet {
           sortValue: CardSet.VALUES[i] + CardSet.SET_VALUE[CardSet.SETS[j]],
           color: color,
           isJoker: false,
+          location: "mase",
         });
       }
     }

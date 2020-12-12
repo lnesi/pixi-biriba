@@ -26,7 +26,7 @@ export default function Interface(props) {
   const game = useContext(GameContext);
   const state = useSelector((state) => state);
   const dispatch = useDispatch();
-  const [table, setTable] = useState("b7918061-5f3b-41fa-aa57-80d803fe7129");
+  const [table, setTable] = useState("6a0faa69-8435-449a-82cf-bceb8087c86d");
   return (
     <div>
       <Table>
@@ -52,7 +52,7 @@ export default function Interface(props) {
               })}
             </td>
             <td>
-              {state.players[0].map((card, i) => {
+              {state.players[0].hand.map((card, i) => {
                 return Card(i, card);
               })}
             </td>
@@ -63,7 +63,7 @@ export default function Interface(props) {
                 })}
             </td>
             <td>
-              {state.players[1].map((card, i) => {
+              {state.players[1].hand.map((card, i) => {
                 return Card(i, card);
               })}
             </td>
