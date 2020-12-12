@@ -95,6 +95,7 @@ export default class Game extends EventTarget {
       case "CARD_CLICK":
         switch (action.payload.location) {
           case "mase":
+            break;
           case "player1":
             _.remove(newState.players[0].hand, action.payload);
             action.payload.location = "selected1";

@@ -184,17 +184,26 @@ export default function Interface(props) {
 }
 
 function Card(i, card) {
-  const icons = { H: "♥", D: "♦", S: "♠", C: "♣", J: "JOKER" };
+  const icons = { H: "♥", D: "♦", S: "♠", C: "♣", J: "JK" };
   const dispatch = useDispatch();
   return (
     <div
       key={i}
-      style={{ color: card.set === "H" || card.set === "D" ? "red" : "black" }}
+      style={{
+        color: card.set === "H" || card.set === "D" ? "red" : "black",
+        border:
+          "1px solid " +
+          (card.set === "H" || card.set === "D" ? "red" : "black"),
+        textAlign: " center",
+        padding: "10px",
+        fontSize: "20px",
+        maxWidth: "40px",
+      }}
       onClick={() => {
         dispatch({ type: "CARD_CLICK", payload: card });
       }}
     >
-      {i}-{icons[card.set]}
+      {icons[card.set]}
       {card.value}
     </div>
   );
