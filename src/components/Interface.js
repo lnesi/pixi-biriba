@@ -150,7 +150,24 @@ export default function Interface(props) {
               <br />
               <ActionButtonn
                 onClick={() => {
-                  dispatch({ type: "PUT_DOWN" });
+                  if (state.takenMase) {
+                    // when selected is empty this is an issue
+                    if (
+                      state.selectedCards &&
+                      state.selectedCards[state.currentPlayer].length == 1
+                    ) {
+                      dispatch({ type: "PUT_DOWN" });
+                    } else if (
+                      state.selectedCards &&
+                      state.selectedCards[state.currentPlayer].length > 1
+                    ) {
+                      alert("You can only put down one card");
+                    } else {
+                      alert("Need select card first");
+                    }
+                  } else {
+                    alert("Need to take card first");
+                  }
                 }}
               >
                 Put Down

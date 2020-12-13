@@ -94,6 +94,8 @@ export default class Game extends EventTarget {
         break;
       case "CARD_CLICK":
         switch (action.payload.location) {
+          case "table":
+            break;
           case "mase":
             break;
           case "player1":
@@ -121,6 +123,19 @@ export default class Game extends EventTarget {
             newState.players[1].hand.push(action.payload);
             break;
         }
+        break;
+      case "PUT_DOWN":
+        const cardfromselected = newState.selectedCards[this.currentPlayer][0];
+        cardfromselected.location = "table";
+        newState.table.push(cardfromselected);
+        newState.selectedCards[this.currentPlayer] = [];
+        newState.takenMase = false;
+        if (newState.currentTurn) {
+          newState.currentTurn = 0;
+        } else {
+          newState.currentTurn = 1;
+        }
+        break;
       default:
         newState;
     }
