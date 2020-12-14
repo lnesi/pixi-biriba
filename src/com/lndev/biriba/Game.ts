@@ -15,6 +15,7 @@ const initialState = {
   currentTurn: 0,
   tableOwnerID: null,
   takenMase: false,
+  takeTable: false,
   selectedCards: [[], []],
 };
 
@@ -84,10 +85,22 @@ export default class Game extends EventTarget {
         card.location = "player" + (this.currentPlayer + 1);
         newState.players[this.currentPlayer].hand.push(card);
         break;
+      case "TAKE_TABLE":
+        let cards = [...newState.table];
+        console.log(cards);
+        newState.takeTable = true;
+        cards = cards.map((c) => {
+          c.location = "player" + (this.currentPlayer + 1);
+          return c;
+        });
+        newState.table = [];
+        newState.players[this.currentPlayer].hand.push(...cards);
+        break;
       case "SORT_HAND":
         newState.players[this.currentPlayer].hand = this.sort(
           newState.players[this.currentPlayer].hand
         );
+
         break;
       case "CREATE_CARDS":
         newState = { ...newState, mase: action.payload };
@@ -124,9 +137,10 @@ export default class Game extends EventTarget {
             break;
         }
         break;
-      case "PUT_DOWN":
+      case "DISCARD":
         const cardfromselected = newState.selectedCards[this.currentPlayer][0];
         cardfromselected.location = "table";
+        if (!newState.table) newState.table = [];
         newState.table.push(cardfromselected);
         newState.selectedCards[this.currentPlayer] = [];
         newState.takenMase = false;

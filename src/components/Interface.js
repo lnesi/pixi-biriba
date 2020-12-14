@@ -86,16 +86,16 @@ export default function Interface(props) {
               })}
             </td>
             <td>
-              {state.table.map((card, i) => {
-                return Card(i, card);
-              })}
+              {state.table &&
+                state.table.map((card, i) => {
+                  return Card(i, card);
+                })}
             </td>
             <td>
               <p>
                 <button
                   onClick={() => {
                     dispatch({ type: "CREATE_TABLE" });
-
                     dispatch({ type: "DEAL" });
                   }}
                 >
@@ -133,15 +133,19 @@ export default function Interface(props) {
               <br />
               <ActionButtonn
                 onClick={() => {
-                  dispatch({ type: "DISCARD" });
+                  dispatch({ type: "PUT_DOWN" });
                 }}
               >
-                discard
+                PUT_DOWN
               </ActionButtonn>
               <br />
               <ActionButtonn
                 onClick={() => {
-                  dispatch({ type: "TAKE_TABLE" });
+                  if (!state.takenMase && !state.takeTable) {
+                    dispatch({ type: "TAKE_TABLE" });
+                  } else {
+                    alert("You already took a card");
+                  }
                 }}
               >
                 Take Table
@@ -150,13 +154,13 @@ export default function Interface(props) {
               <br />
               <ActionButtonn
                 onClick={() => {
-                  if (state.takenMase) {
+                  if (state.takenMase || state.takeTable) {
                     // when selected is empty this is an issue
                     if (
                       state.selectedCards &&
                       state.selectedCards[state.currentPlayer].length == 1
                     ) {
-                      dispatch({ type: "PUT_DOWN" });
+                      dispatch({ type: "DISCARD" });
                     } else if (
                       state.selectedCards &&
                       state.selectedCards[state.currentPlayer].length > 1
@@ -170,7 +174,7 @@ export default function Interface(props) {
                   }
                 }}
               >
-                Put Down
+                DisCcard
               </ActionButtonn>
               <br />
               <button
